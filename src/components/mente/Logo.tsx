@@ -1,0 +1,21 @@
+import { Brain } from "lucide-react";
+import { Link } from "@tanstack/react-router";
+
+export function Logo({ withBadge = true }: { withBadge?: boolean }) {
+  return (
+    <Link to="/" className="flex items-center gap-2.5 group">
+      <div className="relative grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br from-violet-500 to-indigo-600 shadow-[0_8px_25px_-8px_rgba(124,58,237,0.7)]">
+        <Brain className="h-5 w-5 text-white" strokeWidth={2.2} />
+        <div className="absolute inset-0 rounded-xl bg-violet-400/20 blur-xl group-hover:blur-2xl transition-all" />
+      </div>
+      <div className="flex items-baseline gap-1.5">
+        <span className="font-serif text-xl font-semibold tracking-tight text-slate-100">Mente</span>
+        {withBadge && (
+          <span className="rounded-full bg-gradient-to-r from-violet-500 to-indigo-500 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-white">
+            AI
+          </span>
+        )}
+      </div>
+    </Link>
+  );
+}
