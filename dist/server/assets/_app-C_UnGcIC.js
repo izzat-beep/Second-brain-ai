@@ -1,0 +1,112 @@
+import { jsxs, jsx } from "react/jsx-runtime";
+import { useRouterState, useNavigate, Link, Outlet } from "@tanstack/react-router";
+import { Home, FileText, MessageSquare, Clock, Network, BarChart3, Settings, LogOut } from "lucide-react";
+import { A as AmbientBackground } from "./AmbientBackground-CACvtjfQ.js";
+import { L as Logo } from "./Logo-CNoUDhS9.js";
+import { u as useCurrentUser } from "./queries-D1abw7hl.js";
+import { c as clearSession } from "./router-BCpxrgjR.js";
+import { motion, AnimatePresence } from "framer-motion";
+import "@tanstack/react-query";
+import "react";
+const nav = [
+  { to: "/dashboard", label: "Dashboard", icon: Home },
+  { to: "/notes", label: "Yozuvlarim", icon: FileText },
+  { to: "/chat", label: "AI Suhbat", icon: MessageSquare },
+  { to: "/reminders", label: "Eslatmalar", icon: Clock },
+  { to: "/map", label: "G'oyalar Xaritasi", icon: Network },
+  { to: "/reports", label: "Haftalik Hisobot", icon: BarChart3 },
+  { to: "/settings", label: "Sozlamalar", icon: Settings }
+];
+function AppLayout({ children }) {
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const navigate = useNavigate();
+  const { data: user } = useCurrentUser();
+  const displayName = user?.name ?? "Mente";
+  const plan = user?.plan ?? "Pro+";
+  return /* @__PURE__ */ jsxs("div", { className: "relative min-h-screen text-slate-100", children: [
+    /* @__PURE__ */ jsx(AmbientBackground, {}),
+    /* @__PURE__ */ jsxs("div", { className: "flex min-h-screen", children: [
+      /* @__PURE__ */ jsxs(
+        "aside",
+        {
+          className: "sticky top-0 hidden h-screen w-[240px] shrink-0 flex-col border-r border-white/[0.05] bg-[rgba(7,11,20,0.85)] backdrop-blur-xl lg:flex",
+          children: [
+            /* @__PURE__ */ jsx("div", { className: "px-5 py-5", children: /* @__PURE__ */ jsx(Logo, {}) }),
+            /* @__PURE__ */ jsx("nav", { className: "flex-1 space-y-1 px-3", children: nav.map((item) => {
+              const active = pathname === item.to || item.to !== "/dashboard" && pathname.startsWith(item.to);
+              const Icon = item.icon;
+              return /* @__PURE__ */ jsxs(
+                Link,
+                {
+                  to: item.to,
+                  className: "relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-slate-300 transition-colors hover:text-white",
+                  children: [
+                    active && /* @__PURE__ */ jsx(
+                      motion.div,
+                      {
+                        layoutId: "sidebar-active",
+                        className: "absolute inset-0 rounded-xl border border-violet-500/30 bg-violet-500/10",
+                        transition: { type: "spring", stiffness: 380, damping: 30 }
+                      }
+                    ),
+                    active && /* @__PURE__ */ jsx("div", { className: "absolute left-0 top-1/2 h-6 w-[3px] -translate-y-1/2 rounded-r bg-gradient-to-b from-violet-400 to-violet-600" }),
+                    /* @__PURE__ */ jsx(Icon, { className: "relative z-10 h-4 w-4" }),
+                    /* @__PURE__ */ jsx("span", { className: "relative z-10", children: item.label })
+                  ]
+                },
+                item.to
+              );
+            }) }),
+            /* @__PURE__ */ jsx("div", { className: "m-3 rounded-xl border border-white/5 bg-white/[0.03] p-3", children: /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-3", children: [
+              /* @__PURE__ */ jsx("div", { className: "grid h-9 w-9 place-items-center rounded-full bg-gradient-to-br from-violet-500 to-indigo-600 text-sm font-semibold", children: displayName[0]?.toUpperCase() }),
+              /* @__PURE__ */ jsxs("div", { className: "flex-1 min-w-0", children: [
+                /* @__PURE__ */ jsx("div", { className: "truncate text-sm font-medium", children: displayName }),
+                /* @__PURE__ */ jsx("div", { className: "inline-flex items-center rounded-full bg-gradient-to-r from-amber-400 to-amber-600 px-1.5 py-0.5 text-[9px] font-bold text-amber-950", children: plan })
+              ] }),
+              /* @__PURE__ */ jsx(
+                "button",
+                {
+                  onClick: () => {
+                    clearSession();
+                    navigate({ to: "/" });
+                  },
+                  className: "grid h-8 w-8 place-items-center rounded-full text-slate-400 transition-colors hover:bg-white/5 hover:text-white",
+                  "aria-label": "Chiqish",
+                  children: /* @__PURE__ */ jsx(LogOut, { className: "h-4 w-4" })
+                }
+              )
+            ] }) })
+          ]
+        }
+      ),
+      /* @__PURE__ */ jsx("main", { className: "relative min-w-0 flex-1 pb-24 lg:pb-0", children: /* @__PURE__ */ jsx(AnimatePresence, { mode: "wait", children: /* @__PURE__ */ jsx(
+        motion.div,
+        {
+          initial: { opacity: 0, y: 8 },
+          animate: { opacity: 1, y: 0 },
+          exit: { opacity: 0, y: -8 },
+          transition: { duration: 0.3, ease: "easeOut" },
+          children: children ?? /* @__PURE__ */ jsx(Outlet, {})
+        },
+        pathname
+      ) }) })
+    ] }),
+    /* @__PURE__ */ jsx("nav", { className: "glass fixed inset-x-3 bottom-3 z-40 flex items-center justify-around rounded-full px-2 py-2 lg:hidden", children: nav.slice(0, 5).map((item) => {
+      const Icon = item.icon;
+      const active = pathname === item.to || item.to !== "/dashboard" && pathname.startsWith(item.to);
+      return /* @__PURE__ */ jsx(
+        Link,
+        {
+          to: item.to,
+          className: `grid h-11 w-11 place-items-center rounded-full transition-colors ${active ? "bg-violet-500/20 text-violet-300" : "text-slate-400 hover:text-white"}`,
+          children: /* @__PURE__ */ jsx(Icon, { className: "h-5 w-5" })
+        },
+        item.to
+      );
+    }) })
+  ] });
+}
+const SplitComponent = () => /* @__PURE__ */ jsx(AppLayout, { children: /* @__PURE__ */ jsx(Outlet, {}) });
+export {
+  SplitComponent as component
+};

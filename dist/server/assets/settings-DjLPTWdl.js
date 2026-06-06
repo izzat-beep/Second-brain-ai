@@ -1,0 +1,297 @@
+import { jsxs, jsx, Fragment } from "react/jsx-runtime";
+import { useNavigate } from "@tanstack/react-router";
+import { useState, useEffect } from "react";
+import { User, Bell, Brain, Send, Palette, Lock, CreditCard, Loader2, LogOut, ExternalLink, Check, Download, Trash2 } from "lucide-react";
+import { G as GlassCard } from "./GlassCard-BtFCAJrK.js";
+import { P as PurpleButton } from "./PurpleButton-DBsan-dX.js";
+import { u as useCurrentUser, a as useUpdateUser } from "./queries-D1abw7hl.js";
+import { c as clearSession } from "./router-BCpxrgjR.js";
+import "clsx";
+import "tailwind-merge";
+import "framer-motion";
+import "@tanstack/react-query";
+const cats = [{
+  id: "profile",
+  label: "Profil",
+  icon: User
+}, {
+  id: "notif",
+  label: "Bildirishnomalar",
+  icon: Bell
+}, {
+  id: "ai",
+  label: "AI Sozlamalari",
+  icon: Brain
+}, {
+  id: "telegram",
+  label: "Telegram",
+  icon: Send,
+  highlight: true
+}, {
+  id: "appearance",
+  label: "Ko'rinish",
+  icon: Palette
+}, {
+  id: "privacy",
+  label: "Maxfiylik",
+  icon: Lock
+}, {
+  id: "billing",
+  label: "Obuna",
+  icon: CreditCard
+}];
+function Settings() {
+  const [active, setActive] = useState("profile");
+  const navigate = useNavigate();
+  const {
+    data: user
+  } = useCurrentUser();
+  const updateUser = useUpdateUser();
+  const [name, setName] = useState("");
+  useEffect(() => {
+    if (user?.name) setName(user.name);
+  }, [user?.name]);
+  const saveProfile = () => {
+    if (!name.trim()) return;
+    updateUser.mutate({
+      name: name.trim()
+    });
+  };
+  const logout = () => {
+    clearSession();
+    navigate({
+      to: "/"
+    });
+  };
+  const displayName = user?.name ?? "Mente";
+  const email = user?.email ?? "—";
+  const plan = user?.plan ?? "Pro+";
+  const telegramConnected = user?.telegramConnected ?? false;
+  const telegramUsername = user?.telegramUsername ?? "—";
+  return /* @__PURE__ */ jsxs("div", { className: "mx-auto max-w-6xl px-5 py-8 lg:px-10", children: [
+    /* @__PURE__ */ jsx("h1", { className: "font-serif text-3xl font-semibold md:text-4xl", children: "Sozlamalar" }),
+    /* @__PURE__ */ jsxs("div", { className: "mt-6 flex flex-col gap-5 lg:flex-row", children: [
+      /* @__PURE__ */ jsx("nav", { className: "glass h-fit shrink-0 rounded-2xl p-2 lg:w-56", children: cats.map((c) => {
+        const Icon = c.icon;
+        return /* @__PURE__ */ jsxs("button", { onClick: () => setActive(c.id), className: `flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-colors ${active === c.id ? "bg-violet-500/15 text-violet-200" : "text-slate-300 hover:bg-white/5"}`, children: [
+          /* @__PURE__ */ jsx(Icon, { className: "h-4 w-4" }),
+          " ",
+          c.label,
+          c.highlight && /* @__PURE__ */ jsx("span", { className: "ml-auto h-2 w-2 rounded-full bg-emerald-400" })
+        ] }, c.id);
+      }) }),
+      /* @__PURE__ */ jsxs("div", { className: "flex-1 space-y-5", children: [
+        active === "profile" && /* @__PURE__ */ jsxs(GlassCard, { className: "p-6", children: [
+          /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-4", children: [
+            /* @__PURE__ */ jsx("div", { className: "grid h-16 w-16 place-items-center rounded-full bg-gradient-to-br from-violet-500 to-indigo-600 text-2xl font-semibold", children: displayName[0]?.toUpperCase() }),
+            /* @__PURE__ */ jsxs("div", { children: [
+              /* @__PURE__ */ jsx("div", { className: "font-serif text-xl", children: displayName }),
+              /* @__PURE__ */ jsx("div", { className: "text-xs text-slate-500", children: email })
+            ] })
+          ] }),
+          /* @__PURE__ */ jsxs("div", { className: "mt-6 grid gap-4 sm:grid-cols-2", children: [
+            /* @__PURE__ */ jsxs("label", { className: "block text-sm", children: [
+              /* @__PURE__ */ jsx("span", { className: "mb-1 flex items-center justify-between text-xs text-slate-500", children: "To'liq ism" }),
+              /* @__PURE__ */ jsx("input", { value: name, onChange: (e) => setName(e.target.value), className: "glass w-full rounded-xl px-3 py-2.5 text-sm outline-none" })
+            ] }),
+            /* @__PURE__ */ jsx(Field, { label: "Email", value: email, disabled: true, badge: "Tasdiqlangan ✓" }),
+            /* @__PURE__ */ jsx(Field, { label: "Reja", value: plan, disabled: true }),
+            /* @__PURE__ */ jsx(Field, { label: "Timezone", value: "Asia/Tashkent (UTC+5)" })
+          ] }),
+          /* @__PURE__ */ jsx("div", { className: "mt-6 flex flex-wrap gap-2", children: ["🇺🇿 O'zbek", "🇷🇺 Русский", "🇬🇧 English"].map((l, i) => /* @__PURE__ */ jsx("button", { className: `rounded-full px-3 py-1.5 text-xs ${i === 0 ? "bg-violet-500/25 text-violet-200" : "bg-white/5 text-slate-300"}`, children: l }, l)) }),
+          /* @__PURE__ */ jsxs("div", { className: "mt-6 flex flex-wrap items-center gap-3", children: [
+            /* @__PURE__ */ jsx(PurpleButton, { size: "sm", onClick: saveProfile, disabled: updateUser.isPending || !name.trim(), children: updateUser.isPending ? /* @__PURE__ */ jsx(Loader2, { className: "h-4 w-4 animate-spin" }) : "O'zgarishlarni saqlash" }),
+            updateUser.isSuccess && /* @__PURE__ */ jsx("span", { className: "text-xs text-emerald-400", children: "Saqlandi ✓" }),
+            /* @__PURE__ */ jsxs("button", { onClick: logout, className: "ml-auto flex items-center gap-1.5 rounded-full border border-white/10 px-3 py-1.5 text-sm text-slate-300 hover:bg-white/5", children: [
+              /* @__PURE__ */ jsx(LogOut, { className: "h-4 w-4" }),
+              " Chiqish"
+            ] })
+          ] })
+        ] }),
+        active === "telegram" && /* @__PURE__ */ jsxs(GlassCard, { glow: "green", className: "p-6", children: [
+          /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between", children: [
+            /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-3", children: [
+              /* @__PURE__ */ jsx("div", { className: "grid h-12 w-12 place-items-center rounded-2xl bg-sky-500/20 text-sky-300", children: /* @__PURE__ */ jsx(Send, { className: "h-6 w-6" }) }),
+              /* @__PURE__ */ jsxs("div", { children: [
+                /* @__PURE__ */ jsx("div", { className: "font-serif text-xl", children: "Telegram Integratsiyasi" }),
+                /* @__PURE__ */ jsx("div", { className: "text-xs text-slate-500", children: "@SecondBrainAI_bot" })
+              ] })
+            ] }),
+            /* @__PURE__ */ jsxs("span", { className: "inline-flex items-center gap-1.5 rounded-full bg-emerald-500/15 px-3 py-1 text-xs text-emerald-300", children: [
+              /* @__PURE__ */ jsx("span", { className: "h-2 w-2 rounded-full bg-emerald-400 animate-pulse" }),
+              " Ulangan"
+            ] })
+          ] }),
+          /* @__PURE__ */ jsxs("div", { className: "mt-5 space-y-2 text-sm", children: [
+            /* @__PURE__ */ jsxs("div", { className: "flex justify-between", children: [
+              /* @__PURE__ */ jsx("span", { className: "text-slate-500", children: "Ulangan akkaunt" }),
+              /* @__PURE__ */ jsx("span", { children: telegramConnected ? telegramUsername : "Ulanmagan" })
+            ] }),
+            /* @__PURE__ */ jsxs("div", { className: "flex justify-between", children: [
+              /* @__PURE__ */ jsx("span", { className: "text-slate-500", children: "Oxirgi sinxronlash" }),
+              /* @__PURE__ */ jsx("span", { children: "5 daqiqa oldin" })
+            ] })
+          ] }),
+          /* @__PURE__ */ jsx("div", { className: "mt-5 space-y-3", children: ["G'oyalarni avtomatik sinxronlashtirish", "Bildirishnomalarni Telegramga yuborish", "Kundalik hisobotni Telegramga yuborish"].map((t) => /* @__PURE__ */ jsxs("label", { className: "flex items-center justify-between rounded-xl bg-white/[0.03] p-3 text-sm", children: [
+            t,
+            /* @__PURE__ */ jsx(Toggle, { defaultOn: true })
+          ] }, t)) }),
+          /* @__PURE__ */ jsxs("div", { className: "mt-5 flex gap-2", children: [
+            /* @__PURE__ */ jsxs(PurpleButton, { size: "sm", variant: "ghost", children: [
+              /* @__PURE__ */ jsx(ExternalLink, { className: "h-4 w-4" }),
+              " Telegramda ochish"
+            ] }),
+            /* @__PURE__ */ jsx("button", { className: "rounded-full border border-rose-500/40 px-4 py-2 text-sm text-rose-300 hover:bg-rose-500/10", children: "Uzish" })
+          ] })
+        ] }),
+        active === "ai" && /* @__PURE__ */ jsxs(GlassCard, { className: "p-6 space-y-5", children: [
+          /* @__PURE__ */ jsx(Row, { label: "Javob tili", children: /* @__PURE__ */ jsx(Pills, { opts: ["O'zbek", "Ruscha", "Ingliz"], active: 0 }) }),
+          /* @__PURE__ */ jsx(Row, { label: "AI shaxsiyati", children: /* @__PURE__ */ jsx(Pills, { opts: ["Rasmiy", "Do'stona", "Qisqa"], active: 1 }) }),
+          /* @__PURE__ */ jsx(Row, { label: "Avtomatik teglar", children: /* @__PURE__ */ jsx(Toggle, { defaultOn: true }) }),
+          /* @__PURE__ */ jsx(Row, { label: "Kundalik AI xulosasi", children: /* @__PURE__ */ jsx(Toggle, { defaultOn: true }) }),
+          /* @__PURE__ */ jsx(Row, { label: "Kontekst hajmi", children: /* @__PURE__ */ jsx(Pills, { opts: ["10", "50", "100"], active: 1 }) }),
+          /* @__PURE__ */ jsx(Row, { label: "Kayfiyat tahlili", children: /* @__PURE__ */ jsx(Toggle, { defaultOn: true }) })
+        ] }),
+        active === "appearance" && /* @__PURE__ */ jsxs(GlassCard, { className: "p-6", children: [
+          /* @__PURE__ */ jsx("h3", { className: "font-serif text-lg", children: "Mavzu" }),
+          /* @__PURE__ */ jsx("div", { className: "mt-4 grid grid-cols-3 gap-3", children: [{
+            l: "Qorong'i",
+            bg: "#070B14",
+            active: true
+          }, {
+            l: "Yorug'",
+            bg: "#F1F5F9"
+          }, {
+            l: "Tizim",
+            bg: "linear-gradient(135deg,#070B14 50%, #F1F5F9 50%)"
+          }].map((t) => /* @__PURE__ */ jsxs("button", { className: `rounded-2xl p-4 text-left transition-all ${t.active ? "ring-2 ring-violet-500" : "ring-1 ring-white/10"}`, children: [
+            /* @__PURE__ */ jsx("div", { className: "mb-2 h-16 rounded-lg", style: {
+              background: t.bg
+            } }),
+            /* @__PURE__ */ jsx("div", { className: "text-xs", children: t.l })
+          ] }, t.l)) }),
+          /* @__PURE__ */ jsx("h3", { className: "mt-6 font-serif text-lg", children: "Asosiy rang" }),
+          /* @__PURE__ */ jsx("div", { className: "mt-3 flex flex-wrap gap-2", children: ["#7C3AED", "#3B82F6", "#06B6D4", "#22C55E", "#F59E0B", "#EC4899"].map((c, i) => /* @__PURE__ */ jsx("button", { className: `h-9 w-9 rounded-full ring-offset-2 ring-offset-[#070B14] ${i === 0 ? "ring-2 ring-white" : ""}`, style: {
+            background: c
+          } }, c)) })
+        ] }),
+        active === "notif" && /* @__PURE__ */ jsxs(GlassCard, { className: "p-6 space-y-3", children: [
+          /* @__PURE__ */ jsx(Row, { label: "Push bildirishnomalar", children: /* @__PURE__ */ jsx(Toggle, { defaultOn: true }) }),
+          /* @__PURE__ */ jsx(Row, { label: "Yangi AI tahlil", children: /* @__PURE__ */ jsx(Toggle, { defaultOn: true }) }),
+          /* @__PURE__ */ jsx(Row, { label: "Eslatmalar", children: /* @__PURE__ */ jsx(Toggle, { defaultOn: true }) }),
+          /* @__PURE__ */ jsx(Row, { label: "Haftalik hisobot", children: /* @__PURE__ */ jsx(Toggle, { defaultOn: true }) }),
+          /* @__PURE__ */ jsx(Row, { label: "Yangi bog'liqlik", children: /* @__PURE__ */ jsx(Toggle, {}) }),
+          /* @__PURE__ */ jsx(Row, { label: "🌅 Ertalab", children: /* @__PURE__ */ jsx("input", { type: "time", defaultValue: "07:00", className: "rounded-lg bg-white/5 px-3 py-1.5 text-sm outline-none" }) }),
+          /* @__PURE__ */ jsx(Row, { label: "🌙 Kechqurun", children: /* @__PURE__ */ jsx("input", { type: "time", defaultValue: "21:00", className: "rounded-lg bg-white/5 px-3 py-1.5 text-sm outline-none" }) })
+        ] }),
+        active === "billing" && /* @__PURE__ */ jsxs(Fragment, { children: [
+          /* @__PURE__ */ jsxs(GlassCard, { glow: "purple", className: "p-6", children: [
+            /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between", children: [
+              /* @__PURE__ */ jsxs("div", { children: [
+                /* @__PURE__ */ jsx("div", { className: "text-xs text-slate-500", children: "Joriy reja" }),
+                /* @__PURE__ */ jsx("div", { className: "font-serif text-2xl", children: plan })
+              ] }),
+              /* @__PURE__ */ jsx("span", { className: "rounded-full bg-gradient-to-r from-amber-400 to-amber-600 px-3 py-1 text-xs font-bold text-amber-950", children: "Active" })
+            ] }),
+            /* @__PURE__ */ jsxs("div", { className: "mt-5 space-y-3", children: [
+              /* @__PURE__ */ jsx(Usage, { label: "AI tahlillar", value: "47 / ∞", pct: 47, color: "#7C3AED" }),
+              /* @__PURE__ */ jsx(Usage, { label: "Saqlash", value: "1.2GB / 10GB", pct: 12, color: "#3B82F6" })
+            ] })
+          ] }),
+          /* @__PURE__ */ jsxs(GlassCard, { className: "p-6", children: [
+            /* @__PURE__ */ jsx("h3", { className: "font-serif text-lg", children: "To'lov usullari" }),
+            /* @__PURE__ */ jsx("div", { className: "mt-3 flex flex-wrap gap-2 text-xs", children: ["Payme", "Click", "Stripe"].map((p) => /* @__PURE__ */ jsx("span", { className: "rounded-full border border-white/10 px-3 py-1.5", children: p }, p)) })
+          ] })
+        ] }),
+        active === "privacy" && /* @__PURE__ */ jsxs(Fragment, { children: [
+          /* @__PURE__ */ jsxs(GlassCard, { glow: "gold", className: "p-6", children: [
+            /* @__PURE__ */ jsx("h3", { className: "font-serif text-lg", children: "🔐 Ma'lumotlaringiz — sizniki" }),
+            /* @__PURE__ */ jsxs("div", { className: "mt-4 space-y-3 text-sm", children: [
+              /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between", children: [
+                /* @__PURE__ */ jsx("span", { children: "End-to-end shifrlash" }),
+                /* @__PURE__ */ jsxs("span", { className: "inline-flex items-center gap-1 text-emerald-400", children: [
+                  /* @__PURE__ */ jsx(Check, { className: "h-4 w-4" }),
+                  " Yoqilgan"
+                ] })
+              ] }),
+              /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between", children: [
+                /* @__PURE__ */ jsx("span", { children: "Ma'lumotlar joylashuvi" }),
+                /* @__PURE__ */ jsx("span", { className: "text-slate-400", children: "Supabase EU (Frankfurt)" })
+              ] }),
+              /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between", children: [
+                /* @__PURE__ */ jsx("span", { children: "Marketing uchun ishlatish" }),
+                /* @__PURE__ */ jsx("span", { className: "font-bold text-rose-400", children: "🚫 HECH QACHON" })
+              ] })
+            ] })
+          ] }),
+          /* @__PURE__ */ jsx(GlassCard, { className: "p-6", children: /* @__PURE__ */ jsxs("div", { className: "space-y-2", children: [
+            /* @__PURE__ */ jsxs("button", { className: "flex w-full items-center gap-2 rounded-xl bg-white/5 px-4 py-3 text-sm hover:bg-white/10", children: [
+              /* @__PURE__ */ jsx(Download, { className: "h-4 w-4" }),
+              " Barcha ma'lumotlarni yuklab olish"
+            ] }),
+            /* @__PURE__ */ jsxs("button", { className: "flex w-full items-center gap-2 rounded-xl px-4 py-3 text-sm text-rose-300 hover:bg-rose-500/10", children: [
+              /* @__PURE__ */ jsx(Trash2, { className: "h-4 w-4" }),
+              " Hisobni o'chirish"
+            ] })
+          ] }) })
+        ] })
+      ] })
+    ] })
+  ] });
+}
+function Field({
+  label,
+  value,
+  disabled,
+  badge
+}) {
+  return /* @__PURE__ */ jsxs("label", { className: "block text-sm", children: [
+    /* @__PURE__ */ jsxs("span", { className: "mb-1 flex items-center justify-between text-xs text-slate-500", children: [
+      label,
+      badge && /* @__PURE__ */ jsx("span", { className: "text-emerald-400", children: badge })
+    ] }),
+    /* @__PURE__ */ jsx("input", { defaultValue: value, disabled, className: "glass w-full rounded-xl px-3 py-2.5 text-sm outline-none disabled:opacity-60" })
+  ] });
+}
+function Row({
+  label,
+  children
+}) {
+  return /* @__PURE__ */ jsxs("div", { className: "flex flex-wrap items-center justify-between gap-2 border-b border-white/5 pb-3 last:border-0", children: [
+    /* @__PURE__ */ jsx("span", { className: "text-sm text-slate-300", children: label }),
+    children
+  ] });
+}
+function Toggle({
+  defaultOn
+}) {
+  const [on, setOn] = useState(!!defaultOn);
+  return /* @__PURE__ */ jsx("button", { onClick: () => setOn(!on), className: `relative h-6 w-11 rounded-full transition-colors ${on ? "bg-violet-500" : "bg-white/10"}`, children: /* @__PURE__ */ jsx("span", { className: `absolute top-0.5 h-5 w-5 rounded-full bg-white transition-transform ${on ? "translate-x-5" : "translate-x-0.5"}` }) });
+}
+function Pills({
+  opts,
+  active
+}) {
+  const [a, setA] = useState(active);
+  return /* @__PURE__ */ jsx("div", { className: "flex flex-wrap gap-1.5", children: opts.map((o, i) => /* @__PURE__ */ jsx("button", { onClick: () => setA(i), className: `rounded-full px-3 py-1.5 text-xs ${a === i ? "bg-violet-500/25 text-violet-200" : "bg-white/5 text-slate-300"}`, children: o }, o)) });
+}
+function Usage({
+  label,
+  value,
+  pct,
+  color
+}) {
+  return /* @__PURE__ */ jsxs("div", { children: [
+    /* @__PURE__ */ jsxs("div", { className: "flex justify-between text-xs", children: [
+      /* @__PURE__ */ jsx("span", { className: "text-slate-400", children: label }),
+      /* @__PURE__ */ jsx("span", { children: value })
+    ] }),
+    /* @__PURE__ */ jsx("div", { className: "mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-white/5", children: /* @__PURE__ */ jsx("div", { className: "h-full rounded-full", style: {
+      width: `${pct}%`,
+      background: color
+    } }) })
+  ] });
+}
+export {
+  Settings as component
+};

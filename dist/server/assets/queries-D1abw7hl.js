@@ -1,0 +1,129 @@
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
+import { a as api, g as getStoredUser } from "./router-BCpxrgjR.js";
+const isClient = typeof window !== "undefined";
+function useCurrentUser() {
+  return useQuery({
+    queryKey: ["me"],
+    queryFn: async () => (await api.me()).user,
+    initialData: getStoredUser() ?? void 0,
+    enabled: isClient,
+    staleTime: 6e4
+  });
+}
+function useUpdateUser() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (patch) => api.updateMe(patch),
+    onSuccess: (data) => {
+      qc.setQueryData(["me"], data.user);
+      if (isClient) localStorage.setItem("sba_user", JSON.stringify(data.user));
+    }
+  });
+}
+function useNotes(filter = {}) {
+  return useQuery({
+    queryKey: ["notes", filter],
+    queryFn: async () => (await api.listNotes(filter)).notes,
+    enabled: isClient
+  });
+}
+function useNote(id) {
+  return useQuery({
+    queryKey: ["note", id],
+    queryFn: () => api.getNote(id),
+    enabled: isClient && !!id
+  });
+}
+function useCreateNote() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ content, source }) => api.createNote(content, source),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["notes"] });
+      qc.invalidateQueries({ queryKey: ["stats"] });
+      qc.invalidateQueries({ queryKey: ["graph"] });
+      qc.invalidateQueries({ queryKey: ["weekly"] });
+    }
+  });
+}
+function useUpdateNote() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, patch }) => api.updateNote(id, patch),
+    onSuccess: (data) => {
+      qc.invalidateQueries({ queryKey: ["notes"] });
+      qc.invalidateQueries({ queryKey: ["note", data.note.id] });
+    }
+  });
+}
+function useDeleteNote() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id) => api.deleteNote(id),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["notes"] });
+      qc.invalidateQueries({ queryKey: ["stats"] });
+      qc.invalidateQueries({ queryKey: ["graph"] });
+    }
+  });
+}
+function useStats() {
+  return useQuery({ queryKey: ["stats"], queryFn: async () => (await api.stats()).stats, enabled: isClient });
+}
+function useWeekly() {
+  return useQuery({ queryKey: ["weekly"], queryFn: async () => (await api.weekly()).report, enabled: isClient });
+}
+function useGraph() {
+  return useQuery({ queryKey: ["graph"], queryFn: async () => (await api.graph()).graph, enabled: isClient });
+}
+function useDaily() {
+  return useQuery({ queryKey: ["daily"], queryFn: () => api.today(), enabled: isClient });
+}
+function useReminders() {
+  return useQuery({ queryKey: ["reminders"], queryFn: async () => (await api.listReminders()).reminders, enabled: isClient });
+}
+function useCreateReminder() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (body) => api.createReminder(body),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["reminders"] })
+  });
+}
+function useToggleReminder() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, done }) => api.updateReminder(id, { done }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["reminders"] })
+  });
+}
+function useConversations() {
+  return useQuery({ queryKey: ["conversations"], queryFn: async () => (await api.listConversations()).conversations, enabled: isClient });
+}
+function useSendMessage() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ message, conversationId }) => api.sendMessage(message, conversationId),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["conversations"] });
+      qc.invalidateQueries({ queryKey: ["stats"] });
+    }
+  });
+}
+export {
+  useUpdateUser as a,
+  useWeekly as b,
+  useReminders as c,
+  useToggleReminder as d,
+  useCreateReminder as e,
+  useGraph as f,
+  useNotes as g,
+  useStats as h,
+  useDaily as i,
+  useCreateNote as j,
+  useConversations as k,
+  useSendMessage as l,
+  useNote as m,
+  useUpdateNote as n,
+  useDeleteNote as o,
+  useCurrentUser as u
+};
