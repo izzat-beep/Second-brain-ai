@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: second-brain-ai
+    runtime: node
+    buildCommand: bun install && bun run build
+    startCommand: bun dist/server/server.js
